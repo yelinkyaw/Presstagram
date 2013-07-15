@@ -128,18 +128,24 @@ class Presstagram
 	{
 		$publish_type = get_option('presstagram_publish_type');
 		$min_media_id = get_option('presstagram_min_media_id');
-		
-		$attr = Array("min_id"=>$min_media_id);
-		$medium = $this->getMedia($attr);
-		
-		// Process individual posts
-		if($publish_type == "individual" && sizeof($medium)>0)
+		try
 		{
-			update_option('presstagram_min_media_id', $medium[0]->getMediaId());
-			for($i=0; $i<$medium->count()-1; $i++)
+			$attr = Array("min_id"=>$min_media_id);
+			$medium = $this->getMedia($attr);
+		
+			// Process individual posts
+			if($publish_type == "individual" && sizeof($medium)>0)
 			{
-				$this->createPresstagramPost($medium[$i]);
+				update_option('presstagram_min_media_id', $medium[0]->getMediaId());
+				for($i=0; $i<$medium->count()-1; $i++)
+				{
+					$this->createPresstagramPost($medium[$i]);
+				}
 			}
+		}
+		catch (\Instagram\Core\ApiException $e)
+		{
+			return $e->getMessage();
 		}
 	}
 	
