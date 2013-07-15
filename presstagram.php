@@ -142,6 +142,28 @@ class Presstagram
 					$this->createPresstagramPost($medium[$i]);
 				}
 			}
+			else if($publish_type == "daily" && sizeof($medium)>0)
+			{
+				$daily_media = array();
+				$day_index = $medium[0]->getCreatedTime('Y-m-d');
+				$daily_media[$day_index] = array();
+				
+				for($i=0; $i<$medium->count()-1; $i++)
+				{
+					if($day_index != $medium[$i]->getCreatedTime('Y-m-d'))
+					{
+						$day_index = $medium[$i]->getCreatedTime('Y-m-d');
+						$daily_media[$day_index] = array();
+					}
+					$daily_media[$day_index][] = $medium[$i];
+				}
+				
+				update_option('presstagram_min_media_id', $medium[0]->getMediaId());
+				foreach($daily_media as $daily)
+				{
+					$this->createPresstagramPost($daily);
+				}
+			}
 		}
 		catch (\Instagram\Core\ApiException $e)
 		{
@@ -172,6 +194,8 @@ class Presstagram
 			{
 				// Get Instagram Media
 				//$media = $this->instagram->getMedia(trim($id));
+				// Get Date
+				$date = $media->getCreatedTime('Y-m-d 00:00:00');
 				
 				// Get Contents
 				if($post_content=='html')
