@@ -4,7 +4,7 @@ Plugin Name: Presstagram
 Plugin URI: http://www.yelinkyaw.com/presstagram
 Description: Presstagram
 Author: Ye Lin Kyaw
-Version: 0.0.1
+Version: 0.1.0
 Author URI: http://www.yelinkyaw.com
 */
 
@@ -155,7 +155,7 @@ function admin_settings()
 {
 	
 	// Return from Instagram Auth Callback
-	if(isset($_GET['code']))
+	if(isset($_GET['code']) && !isset($_POST['image_size']))
 	{
 		$code = $_GET['code'];
 		// Create Presstagarm
@@ -167,6 +167,10 @@ function admin_settings()
 	if(isset($_GET['logout']))
 	{
 		update_option('presstagram_token', '');
+		
+		//Reset Setting
+		//$presstagram = new Presstagram();
+		//$presstagram->init_presstagram();
 	}
 	
 	// Save Settings
@@ -384,13 +388,13 @@ function admin_ui($presstagram)
 			<td>
 				<select id="publish_type" name="publish_type" style="width: 300px">
 					<option value="individual" <?php if($publish_type=="individual") echo "selected"; ?>>Individual Posts</option>
-					<option value="daily" <?php if($publish_type=="daily") echo "selected"; ?>>Daily Single Post</option>
+					<option value="daily" <?php if($publish_type=="daily") echo "selected"; ?>>Daily Post</option>
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<td><label for="hour">Checking Interval : </label></td>
-			<td><select id="hour" name="hour" style="width: 60px"><?php echo $hour_list; ?></select>:<select id="minute" name="minute" style="width: 60px"><?php echo $minute_list; ?></select> HH:MM (Very frequent interval is not recommened.)</td>
+			<td><select id="hour" name="hour" style="width: 60px"><?php echo $hour_list; ?></select>:<select id="minute" name="minute" style="width: 60px"><?php echo $minute_list; ?></select> HH:MM (New posts checking interval for individual posts option. Very frequent interval is not recommened on shared hosting.)</td>
 		</tr>
 		<tr>
 			<td><label for="video_enable">Enable Video: </label></td>
